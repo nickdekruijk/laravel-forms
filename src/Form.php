@@ -165,6 +165,20 @@ class Form
     }
 
     /**
+     * Return an <input type="email"> element
+     *
+     * @param string $name          the name="" attribute
+     * @param string $default       the default value if no old() available
+     * @param array $attributes     other input html attributes
+     * @param mixed $validate       Laravel validation rules
+     * @return string
+     */
+    public function email(string $name, string $default = null, array $attributes = [], $validate = null): string
+    {
+        return $this->input($name, $default, array_merge(['type' => 'email'], $attributes), $validate);
+    }
+
+    /**
      * Return an <input type="submit"> element
      *
      * @param string $name          the name="" attribute
