@@ -1,0 +1,27 @@
+{
+    "name": "nickdekruijk/laravel-forms",
+    "description": "Add HTML forms to your Laravel app",
+    "license": "MIT",
+    "keywords": ["form", "laravel", "forms"],
+    "homepage": "http://www.nickdekruijk.nl/packages/laravel-forms",
+    "authors": [{
+        "name": "Nick de Kruijk",
+        "email": "git@nickdekruijk.nl"
+    }],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=7.3.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "NickDeKruijk\\LaravelForms\\FormsServiceProvider"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "NickDeKruijk\\LaravelForms\\": "src/"
+        }
+    }
+}
