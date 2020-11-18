@@ -81,9 +81,12 @@ class Form
      */
     public function input(string $name, string $default = null, array $attributes = [], $validate = null): string
     {
+        // Start response
         $response = '<input';
 
+        // Set name attribute from $name parameter
         $attributes['name'] = $name;
+        // Get previous input value or use default
         $attributes['value'] = old($name, $default);
 
         // Add all set attributes
@@ -92,7 +95,11 @@ class Form
                 $response .= ' ' . $attribute . '="' . $value . '"';
             }
         }
+
+        // End of <input tag
         $response .= '>';
+
+        // Return the complete response
         return $response;
     }
 
