@@ -15,6 +15,13 @@ class Form
     ];
 
     /**
+     * Unique id for the current form
+     *
+     * @var string
+     */
+    private $id;
+
+    /**
      * Merge default $this->attributes array with new form attributes
      *
      * @param array $attributes
@@ -22,11 +29,22 @@ class Form
      */
     private function merge_attributes(array $attributes)
     {
+        // Overwrite action with route if given
         if (isset($attributes['route'])) {
             $attributes['action'] = route($attributes['route']);
             unset($attributes['route']);
         }
+
+        // Merge the attributes with defaults
         $this->attributes = array_merge($this->attributes, $attributes);
+
+        // Generate unique id for the current form
+        $this->id = md5(config('forms.session_prefix') . url()->current());
+
+        // Use form-default route if action still empty
+        if (empty($this->attributes['action'])) {
+            $this->attributes['action'] = route(config('forms.route_name'), $this->id);
+        }
     }
 
     /**
