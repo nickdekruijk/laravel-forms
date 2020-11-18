@@ -183,7 +183,6 @@ class Form
      */
     public function textarea(string $name, string $default = null, array $attributes = [], $validate = null): string
     {
-        $attributes['value'] = old($name, $default);
         $this->add_rule($name, $validate);
         return $this->html_element('textarea', $name, $attributes) . old($name, $default) . '</textarea>';
     }
