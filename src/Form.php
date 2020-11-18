@@ -243,6 +243,18 @@ class Form
     }
 
     /**
+     * Return a <button> element
+     *
+     * @param string $text          the text inside the button
+     * @param array $attributes     other input html attributes
+     * @return string
+     */
+    public function button(string $text, array $attributes = []): string
+    {
+        return $this->html_element('button', '', $attributes) . $text . '</button>';
+    }
+
+    /**
      * Return a <UL> list with (validation) errors if any
      *
      * @param ViewErrorBag $errors  The $errors bag passed to the view
