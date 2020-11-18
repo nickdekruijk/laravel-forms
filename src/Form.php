@@ -115,6 +115,47 @@ class Form
     }
 
     /**
+     * Add $name as attribute and return all attributes for html element
+     *
+     * @param string $element       The html element to output (e.g. INPUT, TEXTAREA etc)
+     * @param string $name          The name attribute
+     * @param array $attributes     All other html attributes
+     * @return string
+     */
+    private function html_element(string $element, string $name, array $attributes): string
+    {
+        $attributes['name'] = $name;
+
+        // Generate response
+        $response = '<' . $element;
+        foreach ($attributes as $attribute => $value) {
+            if ($value) {
+                $response .= ' ' . $attribute . '="' . $value . '"';
+            }
+        }
+
+        // End of <input tag
+        $response .= '>';
+
+        return $response;
+    }
+
+    /**
+     * Add a validation rule to $this->validate array
+     *
+     * @param string $name
+     * @param mixed $rule
+     * @return void
+     */
+    private function add_rule(string $name, $rule)
+    {
+        // Add validation rule 
+        if ($rule) {
+            $this->validate[$name] = $rule;
+        }
+    }
+
+    /**
      * Return an <input> element
      *
      * @param string $name          the name="" attribute
@@ -125,31 +166,10 @@ class Form
      */
     public function input(string $name, string $default = null, array $attributes = [], $validate = null): string
     {
-        // Start response
-        $response = '<input';
-
-        // Set name attribute from $name parameter
-        $attributes['name'] = $name;
         // Get previous input value or use default
         $attributes['value'] = old($name, $default);
-
-        // Add all set attributes
-        foreach ($attributes as $attribute => $value) {
-            if ($value) {
-                $response .= ' ' . $attribute . '="' . $value . '"';
-            }
-        }
-
-        // Add validation rule
-        if ($validate) {
-            $this->validate[$name] = $validate;
-        }
-
-        // End of <input tag
-        $response .= '>';
-
-        // Return the complete response
-        return $response;
+        $this->add_rule($name, $validate);
+        return $this->html_element('input', $name, $attributes);
     }
 
     /**
@@ -178,6 +198,20 @@ class Form
     public function email(string $name, string $default = null, array $attributes = [], $validate = null): string
     {
         return $this->input($name, $default, array_merge(['type' => 'email'], $attributes), $validate);
+    }
+
+    /**
+     * Return an <input type="file"> element
+     *
+     * @param string $name          the name="" attribute
+     * @param string $default       the default value if no old() available
+     * @param array $attributes     other input html attributes
+     * @param mixed $validate       Laravel validation rules
+     * @return string
+     */
+    public function file(string $name, string $default = null, array $attributes = [], $validate = null): string
+    {
+        return $this->input($name, $default, array_merge(['type' => 'file'], $attributes), $validate);
     }
 
     /**
