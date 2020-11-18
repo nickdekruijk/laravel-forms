@@ -16,7 +16,10 @@
         "laravel": {
             "providers": [
                 "NickDeKruijk\\LaravelForms\\FormsServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "Minify": "NickDeKruijk\\LaravelForms\\Facade"
+            }
         }
     },
     "autoload": {

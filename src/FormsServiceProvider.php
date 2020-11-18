@@ -26,5 +26,10 @@ class FormsServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/config.php', 'forms');
+
+        // Register the main class to use with the facade
+        $this->app->singleton('form', function () {
+            return new Form;
+        });
     }
 }
