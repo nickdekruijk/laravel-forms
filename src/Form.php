@@ -69,4 +69,58 @@ class Form
     {
         return '</form>';
     }
+
+    /**
+     * Return an <input> element
+     *
+     * @param string $name          the name="" attribute
+     * @param string $default       the default value if no old() available
+     * @param array $attributes     other input html attributes
+     * @param mixed $validate       laravel validation
+     * @return string
+     */
+    public function input(string $name, string $default = null, array $attributes = [], mixed $validate = null): string
+    {
+        $response = '<input';
+
+        $attributes['name'] = $name;
+        $attributes['value'] = old($name, $default);
+
+        // Add all set attributes
+        foreach ($attributes as $attribute => $value) {
+            if ($value) {
+                $response .= ' ' . $attribute . '="' . $value . '"';
+            }
+        }
+        $response .= '>';
+        return $response;
+    }
+
+    /**
+     * Return an <input type="text"> element
+     *
+     * @param string $name          the name="" attribute
+     * @param string $default       the default value if no old() available
+     * @param array $attributes     other input html attributes
+     * @param mixed $validate       laravel validation
+     * @return string
+     */
+    public function text(string $name, string $default = null, array $attributes = [], mixed $validate = null): string
+    {
+        return $this->input($name, $default, array_merge(['type' => 'text'], $attributes));
+    }
+
+    /**
+     * Return an <input type="submit"> element
+     *
+     * @param string $name          the name="" attribute
+     * @param string $default       the default value if no old() available
+     * @param array $attributes     other input html attributes
+     * @param mixed $validate       laravel validation
+     * @return string
+     */
+    public function submit(string $name, string $default = null, array $attributes = [], mixed $validate = null): string
+    {
+        return $this->input($name, $default, array_merge(['type' => 'submit'], $attributes));
+    }
 }
