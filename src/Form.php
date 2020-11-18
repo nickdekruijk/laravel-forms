@@ -76,10 +76,10 @@ class Form
      * @param string $name          the name="" attribute
      * @param string $default       the default value if no old() available
      * @param array $attributes     other input html attributes
-     * @param mixed $validate       laravel validation
+     * @param mixed $validate       Laravel validation rules
      * @return string
      */
-    public function input(string $name, string $default = null, array $attributes = [], mixed $validate = null): string
+    public function input(string $name, string $default = null, array $attributes = [], $validate = null): string
     {
         $response = '<input';
 
@@ -102,12 +102,12 @@ class Form
      * @param string $name          the name="" attribute
      * @param string $default       the default value if no old() available
      * @param array $attributes     other input html attributes
-     * @param mixed $validate       laravel validation
+     * @param mixed $validate       Laravel validation rules
      * @return string
      */
-    public function text(string $name, string $default = null, array $attributes = [], mixed $validate = null): string
+    public function text(string $name, string $default = null, array $attributes = [], $validate = null): string
     {
-        return $this->input($name, $default, array_merge(['type' => 'text'], $attributes));
+        return $this->input($name, $default, array_merge(['type' => 'text'], $attributes), $validate);
     }
 
     /**
@@ -116,11 +116,11 @@ class Form
      * @param string $name          the name="" attribute
      * @param string $default       the default value if no old() available
      * @param array $attributes     other input html attributes
-     * @param mixed $validate       laravel validation
+     * @param mixed $validate       Laravel validation rules
      * @return string
      */
-    public function submit(string $name, string $default = null, array $attributes = [], mixed $validate = null): string
+    public function submit(string $name, string $default = null, array $attributes = [], $validate = null): string
     {
-        return $this->input($name, $default, array_merge(['type' => 'submit'], $attributes));
+        return $this->input($name, $default, array_merge(['type' => 'submit'], $attributes), $validate);
     }
 }
