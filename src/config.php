@@ -18,4 +18,13 @@ return [
     */
     'route_name' => 'FormController',
 
+    /*
+    |--------------------------------------------------------------------------
+    | session_prefix
+    |--------------------------------------------------------------------------
+    | Form data will be stored in a session variable, to avoid conflicts this
+    | variable will be prefixed with form_
+    */
+    'session_prefix' => 'form_',
+
 ];

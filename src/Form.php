@@ -29,6 +29,19 @@ class Form
     private $validate = [];
 
     /**
+     * Store the current form in a session for FormController access
+     *
+     * @return void
+     */
+    private function form_session()
+    {
+        session([config('forms.session_prefix') . $this->id => [
+            'attributes' => $this->attributes,
+            'validate' => $this->validate,
+        ]]);
+    }
+
+    /**
      * Merge default $this->attributes array with new form attributes
      *
      * @param array $attributes
@@ -92,6 +105,10 @@ class Form
      */
     public function close()
     {
+        // Store the current form in a session
+        $this->form_session();
+
+        // Return response
         return '</form>';
     }
 
