@@ -2,6 +2,8 @@
 
 namespace NickDeKruijk\LaravelForms;
 
+use Illuminate\Support\ViewErrorBag;
+
 class Form
 {
     /**
@@ -190,5 +192,29 @@ class Form
     public function submit(string $name, array $attributes = [], $validate = null): string
     {
         return $this->input($name, null, array_merge(['type' => 'submit'], $attributes), $validate);
+    }
+
+    /**
+     * Return a <UL> list with (validation) errors if any
+     *
+     * @param ViewErrorBag $errors  The $errors bag passed to the view
+     * @param string $message       General error message to show on top of list
+     * @param string $class         CSS class(es) to apply to the UL element
+     * @return string
+     */
+    public function errors(ViewErrorBag $errors, string $message = null, string $class = 'alert alert-danger'): string
+    {
+        $response = '';
+        if ($errors->any()) {
+            $response .= '<ul class="' . $class . '">';
+            if ($message) {
+                $response .= $message;
+            }
+            foreach ($errors->all() as $error) {
+                $response .= '<li>' . $error . '</li>';
+            }
+            $response .= '</ul>';
+        }
+        return $response;
     }
 }
