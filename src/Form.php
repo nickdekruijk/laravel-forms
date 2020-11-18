@@ -233,7 +233,6 @@ class Form
      * Return an <input type="submit"> element
      *
      * @param string $name          the name="" attribute
-     * @param string $default       the default value if no old() available
      * @param array $attributes     other input html attributes
      * @param mixed $validate       Laravel validation rules
      * @return string
