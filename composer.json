@@ -18,7 +18,7 @@
                 "NickDeKruijk\\LaravelForms\\FormsServiceProvider"
             ],
             "aliases": {
-                "Minify": "NickDeKruijk\\LaravelForms\\Facade"
+                "Form": "NickDeKruijk\\LaravelForms\\Facade"
             }
         }
     },
