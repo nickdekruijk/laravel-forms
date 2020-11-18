@@ -187,8 +187,8 @@ class Form
      * @param mixed $validate       Laravel validation rules
      * @return string
      */
-    public function submit(string $name, string $default = null, array $attributes = [], $validate = null): string
+    public function submit(string $name, array $attributes = [], $validate = null): string
     {
-        return $this->input($name, $default, array_merge(['type' => 'submit'], $attributes), $validate);
+        return $this->input($name, null, array_merge(['type' => 'submit'], $attributes), $validate);
     }
 }
