@@ -22,6 +22,13 @@ class Form
     private $id;
 
     /**
+     * The validation rules for all fields
+     *
+     * @var array
+     */
+    private $validate = [];
+
+    /**
      * Merge default $this->attributes array with new form attributes
      *
      * @param array $attributes
@@ -112,6 +119,11 @@ class Form
             if ($value) {
                 $response .= ' ' . $attribute . '="' . $value . '"';
             }
+        }
+
+        // Add validation rule
+        if ($validate) {
+            $this->validate[$name] = $validate;
         }
 
         // End of <input tag
