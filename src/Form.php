@@ -173,6 +173,22 @@ class Form
     }
 
     /**
+     * Return a <textarea> element
+     *
+     * @param string $name          the name="" attribute
+     * @param string $default       the default value if no old() available
+     * @param array $attributes     other input html attributes
+     * @param mixed $validate       Laravel validation rules
+     * @return string
+     */
+    public function textarea(string $name, string $default = null, array $attributes = [], $validate = null): string
+    {
+        $attributes['value'] = old($name, $default);
+        $this->add_rule($name, $validate);
+        return $this->html_element('textarea', $name, $attributes) . old($name, $default) . '</textarea>';
+    }
+
+    /**
      * Return an <input type="text"> element
      *
      * @param string $name          the name="" attribute
