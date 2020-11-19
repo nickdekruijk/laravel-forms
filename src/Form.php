@@ -130,7 +130,11 @@ class Form
         $response = '<' . $element;
         foreach ($attributes as $attribute => $value) {
             if ($value) {
-                $response .= ' ' . $attribute . '="' . $value . '"';
+                if (is_numeric($attribute)) {
+                    $response .= ' ' . $value;
+                } else {
+                    $response .= ' ' . $attribute . '="' . $value . '"';
+                }
             }
         }
 
