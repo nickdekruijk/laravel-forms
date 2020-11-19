@@ -27,4 +27,21 @@ return [
     */
     'session_prefix' => 'form_',
 
+    /*
+    |--------------------------------------------------------------------------
+    | upload_storage
+    |--------------------------------------------------------------------------
+    | Storage disk to use for uploads as defined in config/filesystems.php
+    | For example 'local', 'public' or 's3'
+    */
+    'upload_storage' => 'local',
+
+    /*
+    |--------------------------------------------------------------------------
+    | upload_path
+    |--------------------------------------------------------------------------
+    | Path to use withing the upload storage
+    */
+    'upload_path' => 'form_uploads',
+
 ];

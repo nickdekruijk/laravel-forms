@@ -2,5 +2,5 @@
 
 return [
     'browse' => 'Browse...',
-    'delete' => 'Delete',
+    'delete' => '&times;',
 ];

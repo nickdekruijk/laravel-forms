@@ -14,7 +14,15 @@ class Form
     private $attributes = [
         'method' => 'POST',
         'action' => null,
+        'enctype' => 'multipart/form-data',
     ];
+
+    /**
+     * To keep track of any input=file elements so Form::close will also include the bytesToSize javascript function
+     *
+     * @var boolean
+     */
+    private $hasFileInput = false;
 
     /**
      * Unique id for the current form
@@ -24,11 +32,25 @@ class Form
     private $id;
 
     /**
+     * References to all file uploads within the form
+     *
+     * @var array
+     */
+    private $uploads = [];
+
+    /**
      * The validation rules for all fields
      *
      * @var array
      */
     private $validate = [];
+
+    /**
+     * Keep all input values here
+     *
+     * @var array
+     */
+    private $values = [];
 
     /**
      * Store the current form in a session for FormController access
@@ -39,7 +61,9 @@ class Form
     {
         session([config('forms.session_prefix') . $this->id => [
             'attributes' => $this->attributes,
+            'uploads' => $this->uploads,
             'validate' => $this->validate,
+            'values' => $this->values,
         ]]);
     }
 
@@ -80,6 +104,11 @@ class Form
         // Merge attributes with defaults
         $this->merge_attributes($attributes);
 
+        // 
+        $form = session(config('forms.session_prefix') . $this->id);
+        $this->uploads = $form['uploads'] ?? [];
+        $this->values = $form['values'] ?? [];
+
         // Start response
         $response = '<form';
 
@@ -110,8 +139,16 @@ class Form
         // Store the current form in a session
         $this->form_session();
 
+        $response = '';
+
+        // If the form has any input=file elemements add the necessary JavaScript code
+        if ($this->hasFileInput) {
+            $response .= $this->fileInputJavaScript();
+        }
+
+        $response .= '</form>';
         // Return response
-        return '</form>';
+        return $response;
     }
 
     /**
@@ -122,7 +159,7 @@ class Form
      * @param array $attributes     All other html attributes
      * @return string
      */
-    private function html_element(string $element, string $name, array $attributes): string
+    private function html_element(string $element, string $name, ?array $attributes): string
     {
         $attributes['name'] = $name;
 
@@ -163,15 +200,15 @@ class Form
      * Return an <input> element
      *
      * @param string $name          the name="" attribute
-     * @param string $default       the default value if no old() available
+     * @param string $default       the default value if no old available
      * @param array $attributes     other input html attributes
      * @param mixed $validate       Laravel validation rules
      * @return string
      */
-    public function input(string $name, string $default = null, array $attributes = [], $validate = null): string
+    public function input(string $name, string $default = null, ?array $attributes = [], $validate = null): string
     {
         // Get previous input value or use default
-        $attributes['value'] = old($name, $default);
+        $attributes['value'] = $this->values[$name] ?? $default;
         $this->add_rule($name, $validate);
         return $this->html_element('input', $name, $attributes);
     }
@@ -180,57 +217,157 @@ class Form
      * Return a <textarea> element
      *
      * @param string $name          the name="" attribute
-     * @param string $default       the default value if no old() available
+     * @param string $default       the default value if no old  available
      * @param array $attributes     other input html attributes
      * @param mixed $validate       Laravel validation rules
      * @return string
      */
-    public function textarea(string $name, string $default = null, array $attributes = [], $validate = null): string
+    public function textarea(string $name, string $default = null, ?array $attributes = [], $validate = null): string
     {
         $this->add_rule($name, $validate);
-        return $this->html_element('textarea', $name, $attributes) . old($name, $default) . '</textarea>';
+        return $this->html_element('textarea', $name, $attributes) . ($this->values[$name] ?? $default) . '</textarea>';
     }
 
     /**
      * Return an <input type="text"> element
      *
      * @param string $name          the name="" attribute
-     * @param string $default       the default value if no old() available
+     * @param string $default       the default value if no old available
      * @param array $attributes     other input html attributes
      * @param mixed $validate       Laravel validation rules
      * @return string
      */
-    public function text(string $name, string $default = null, array $attributes = [], $validate = null): string
+    public function text(string $name, string $default = null, ?array $attributes = [], $validate = null): string
     {
-        return $this->input($name, $default, array_merge(['type' => 'text'], $attributes), $validate);
+        return $this->input($name, $default, array_merge(['type' => 'text'], $attributes ?: []), $validate);
     }
 
     /**
      * Return an <input type="email"> element
      *
      * @param string $name          the name="" attribute
-     * @param string $default       the default value if no old() available
+     * @param string $default       the default value if no old available
      * @param array $attributes     other input html attributes
      * @param mixed $validate       Laravel validation rules
      * @return string
      */
-    public function email(string $name, string $default = null, array $attributes = [], $validate = null): string
+    public function email(string $name, string $default = null, ?array $attributes = [], $validate = null): string
     {
-        return $this->input($name, $default, array_merge(['type' => 'email'], $attributes), $validate);
+        return $this->input($name, $default, array_merge(['type' => 'email'], $attributes ?: []), $validate);
+    }
+
+    /**
+     * Return a human readable size
+     *
+     * @param integer $bytes
+     * @return string
+     */
+    public static function bytesToSize(int $bytes): string
+    {
+        $sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        if ($bytes == 0) return '0 Byte';
+        $i = (floor(log($bytes) / log(1024)));
+        return round($bytes / pow(1024, $i)) . ' ' . $sizes[$i];
+    }
+
+    /**
+     * This will return the necessary javascript for make file inputs work
+     *
+     * @return string
+     */
+    public static function fileInputJavaScript(): string
+    {
+        return "
+            <script>
+                if (typeof bytesToSize != 'function') {
+                    window.bytesToSize = function(bytes) {
+                        var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+                        if (bytes == 0) return '0 Byte';
+                        var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+                        return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+                    };
+                }
+                if (typeof form_file_browse_click != 'function') {
+                    window.form_file_browse_click = function(t) {
+                        t.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.click();
+                    };
+                }
+                if (typeof form_file_delete_click != 'function') {
+                    window.form_file_delete_click = function(t) {
+                        t.previousElementSibling.style.display = 'block';
+                        t.style.display = 'none';
+                        t.nextElementSibling.style.display = 'none';
+                        t.nextElementSibling.innerHTML = '';
+                        t.nextElementSibling.nextElementSibling.checked = true;
+                        t.nextElementSibling.nextElementSibling.nextElementSibling.value = '';
+                    };
+                }
+                if (typeof form_file_input_change != 'function') {
+                    window.form_file_input_change = function(t) {
+                        t.previousElementSibling.checked = false;
+                        t.previousElementSibling.previousElementSibling.innerHTML = t.value.replace(/^.*[\\\/]/, '') + ' (' + bytesToSize(t.files[0].size) + ')';
+                        t.previousElementSibling.previousElementSibling.style.display = 'block';
+                        t.previousElementSibling.previousElementSibling.previousElementSibling.style.display = 'block';
+                        t.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.style.display = 'none';
+                    };
+                }
+            </script>
+        ";
     }
 
     /**
      * Return an <input type="file"> element
      *
      * @param string $name          the name="" attribute
-     * @param string $default       the default value if no old() available
+     * @param string $default       the default value if no old available
      * @param array $attributes     other input html attributes
      * @param mixed $validate       Laravel validation rules
      * @return string
      */
-    public function file(string $name, string $default = null, array $attributes = [], $validate = null): string
+    public function file(string $name, string $default = null, ?array $attributes = [], $validate = null): string
     {
-        return $this->input($name, $default, array_merge(['type' => 'file'], $attributes), $validate);
+        $this->hasFileInput = true;
+
+        $attributes['value'] = $this->values[$name] ?? $default;
+        $this->add_rule($name, $validate);
+        // <span class="flex">
+        //   <button type="button" class="upload">Bladeren...</button>
+        //   <button type="button" class="delete hidden">Wissen</button>
+        //   <span class="filename"></span>
+        //   <input type="checkbox" name="_delete_projectomschrijving"><input name="projectomschrijving" type="file" value="">
+        // </span>
+        // $('LABEL.file BUTTON.upload').click(function(e) {
+        //     $(this).siblings('INPUT[type=file]').click();
+        //     e.preventDefault();
+        //     return false;
+        // });
+        // $('LABEL.file BUTTON.delete').click(function(e) {
+        //     $(this).siblings('INPUT[type=file]').val('');
+        //     $(this).siblings('.filename').text('');
+        //     $(this).siblings('BUTTON.upload').removeClass('hidden');
+        //     $(this).siblings('INPUT[type=checkbox]').prop('checked', true);
+        //     $(this).addClass('hidden');
+        //     e.preventDefault();
+        //     return false;
+        // });
+        // $('LABEL.file INPUT[type=file]').change(function() {
+        //     $(this).siblings('BUTTON.delete').removeClass('hidden');
+        //     $(this).siblings('BUTTON.upload').addClass('hidden');
+        //     $(this).siblings('INPUT[type=checkbox]').prop('checked', false);
+        //     $(this).siblings('.filename').text($(this).val().replace(/^.*[\\\/]/, '') + ' (' + bytesToSize(this.files[0].size) + ')');
+        // });
+        $response = '<span class="' . ($attributes['class'] ?? 'form_input') . '">';
+        $response .= '<button type="button" ' . (isset($this->uploads[$name]['name']) ? 'style="display:none" ' : '') . 'onclick="return form_file_browse_click(this)">' . trans('form::button.browse') . '</button>';
+        $response .= '<button type="button" ' . (empty($this->uploads[$name]['name']) ? 'style="display:none" ' : '') . 'onclick="return form_file_delete_click(this)">' . trans('form::button.delete') . '</button>';
+        if (isset($this->uploads[$name]['name'])) {
+            $response .= '<span>' . $this->uploads[$name]['name'] . ' (' . $this->bytesToSize($this->uploads[$name]['size']) . ')' . '</span>';
+        } else {
+            $response .= '<span style="display:none"></span>';
+        }
+        $response .= '<input style="display:none" type="checkbox" name="_delete_' . $name . '">';
+        $response .= $this->html_element('input', $name, array_merge(['type' => 'file', 'style="display:none"', 'onchange' => 'return form_file_input_change(this)'], $attributes));
+        $response .= '</span>';
+        return $response;
     }
 
     /**
