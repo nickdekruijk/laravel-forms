@@ -16,6 +16,7 @@ class FormsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/config.php' => config_path('forms.php'),
         ], 'config');
+        $this->loadTranslationsFrom(__DIR__ . '/lang', 'form');
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
     }
 
