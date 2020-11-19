@@ -11,7 +11,13 @@ use Storage;
 
 class FormController extends Controller
 {
-    private function mail($form)
+    /**
+     * The mail handler
+     *
+     * @param array $form
+     * @return void
+     */
+    private function mail(array $form)
     {
         $body = '<table>';
         foreach ($form['values'] as $name => $value) {
@@ -37,7 +43,13 @@ class FormController extends Controller
         });
     }
 
-    private function log($form)
+    /**
+     * The log handler
+     *
+     * @param array $form
+     * @return void
+     */
+    private function log(array $form)
     {
         Log::channel($form['controller']['log_channel'])->info('Form post', $form);
     }
