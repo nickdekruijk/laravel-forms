@@ -18,6 +18,20 @@ class Form
     ];
 
     /**
+     * FormController options
+     *
+     * @var array
+     */
+    private $controller = [
+        'handler' => null, // 'log|mail|mailable|model'
+        'log_channel' => 'stack',
+        'mail_to' => [], // '$email'
+        'mail_subject' => 'New form submission',
+        'mailable' => null, // 'App/Mail/Mailable'
+        'model' => null, // 'App\Models\Registrations'
+    ];
+
+    /**
      * To keep track of any input=file elements so Form::close will also include the bytesToSize javascript function
      *
      * @var boolean
@@ -61,6 +75,7 @@ class Form
     {
         session([config('forms.session_prefix') . $this->id => [
             'attributes' => $this->attributes,
+            'controller' => $this->controller,
             'uploads' => $this->uploads,
             'validate' => $this->validate,
             'values' => $this->values,
@@ -96,15 +111,19 @@ class Form
     /**
      * Open a new <form>
      *
-     * @param array $attributes
+     * @param array $attributes     list of html attributes for the <form> element
+     * @param array $controller     FormController options
      * @return void
      */
-    public function open(array $attributes = [])
+    public function open(?array $attributes = [], ?array $controller = [])
     {
         // Merge attributes with defaults
-        $this->merge_attributes($attributes);
+        $this->merge_attributes($attributes ?: []);
 
-        // 
+        // Merge controller options with defaults
+        $this->controller = array_merge($this->controller, $controller ?: []);
+
+        // Get form uploads and values from session
         $form = session(config('forms.session_prefix') . $this->id);
         $this->uploads = $form['uploads'] ?? [];
         $this->values = $form['values'] ?? [];
