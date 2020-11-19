@@ -54,6 +54,13 @@ class FormController extends Controller
         Log::channel($form['controller']['log_channel'])->info('Form post', $form);
     }
 
+    /**
+     * FormController@post route handler
+     *
+     * @param Request $request
+     * @param string $id
+     * @return void
+     */
     public function post(Request $request, string $id)
     {
         // Get form from session
