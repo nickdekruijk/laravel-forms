@@ -12,6 +12,22 @@ use Storage;
 class FormController extends Controller
 {
     /**
+     * Deletes all old uploaded files from storage (garbage collection)
+     *
+     * @param integer $gracePeriod  the number of seconds a file should be kept in storage
+     * @return void
+     */
+    public static function clearOldUploads(int $gracePeriod = 3600 * 24)
+    {
+        $disk = Storage::disk(config('forms.upload_storage'));
+        foreach ($disk->files(config('forms.upload_path')) as $file) {
+            if (time() - $disk->lastModified($file) > $gracePeriod) {
+                $disk->delete($file);
+            }
+        }
+    }
+
+    /**
      * The mail handler
      *
      * @param array $form
@@ -63,6 +79,9 @@ class FormController extends Controller
      */
     public function post(Request $request, string $id)
     {
+        // Clear all old uploaded files (garbage collection)
+        $this->clearOldUploads();
+
         // Get form from session
         $form = session(config('forms.session_prefix') . $id);
 
