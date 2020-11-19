@@ -17,6 +17,9 @@ class FormController extends Controller
         foreach ($form['values'] as $name => $value) {
             $body .= '<tr><td>' . $name . '</td><td>' . $value . '</td></tr>';
         }
+        foreach ($form['uploads'] as $name => $value) {
+            $body .= '<tr><td>' . $name . '</td><td>' . $value['name'] . '</td></tr>';
+        }
         $body .= '</table>';
         Mail::send([], [], function ($message) use ($form, $body) {
             $message->subject($form['controller']['mail_subject']);
