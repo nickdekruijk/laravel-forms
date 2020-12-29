@@ -276,6 +276,20 @@ class Form
     }
 
     /**
+     * Return an <input type="date"> element
+     *
+     * @param string $name          the name="" attribute
+     * @param string $default       the default value if no old available
+     * @param array $attributes     other input html attributes
+     * @param mixed $validate       Laravel validation rules
+     * @return string
+     */
+    public function date(string $name, string $default = null, ?array $attributes = [], $validate = null): string
+    {
+        return $this->input($name, $default, array_merge(['type' => 'date'], $attributes ?: []), $validate);
+    }
+
+    /**
      * Return a human readable size
      *
      * @param integer $bytes
