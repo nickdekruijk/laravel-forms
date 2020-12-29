@@ -349,32 +349,6 @@ class Form
 
         $attributes['value'] = $this->values[$name] ?? $default;
         $this->add_rule($name, $validate);
-        // <span class="flex">
-        //   <button type="button" class="upload">Bladeren...</button>
-        //   <button type="button" class="delete hidden">Wissen</button>
-        //   <span class="filename"></span>
-        //   <input type="checkbox" name="_delete_projectomschrijving"><input name="projectomschrijving" type="file" value="">
-        // </span>
-        // $('LABEL.file BUTTON.upload').click(function(e) {
-        //     $(this).siblings('INPUT[type=file]').click();
-        //     e.preventDefault();
-        //     return false;
-        // });
-        // $('LABEL.file BUTTON.delete').click(function(e) {
-        //     $(this).siblings('INPUT[type=file]').val('');
-        //     $(this).siblings('.filename').text('');
-        //     $(this).siblings('BUTTON.upload').removeClass('hidden');
-        //     $(this).siblings('INPUT[type=checkbox]').prop('checked', true);
-        //     $(this).addClass('hidden');
-        //     e.preventDefault();
-        //     return false;
-        // });
-        // $('LABEL.file INPUT[type=file]').change(function() {
-        //     $(this).siblings('BUTTON.delete').removeClass('hidden');
-        //     $(this).siblings('BUTTON.upload').addClass('hidden');
-        //     $(this).siblings('INPUT[type=checkbox]').prop('checked', false);
-        //     $(this).siblings('.filename').text($(this).val().replace(/^.*[\\\/]/, '') + ' (' + bytesToSize(this.files[0].size) + ')');
-        // });
         $response = '<span class="' . ($attributes['class'] ?? 'form_input') . '">';
         $response .= '<button type="button" ' . (isset($this->uploads[$name]['name']) ? 'style="display:none" ' : '') . 'onclick="return form_file_browse_click(this)">' . trans('form::button.browse') . '</button>';
         $response .= '<button type="button" ' . (empty($this->uploads[$name]['name']) ? 'style="display:none" ' : '') . 'onclick="return form_file_delete_click(this)">' . trans('form::button.delete') . '</button>';
