@@ -403,6 +403,30 @@ class Form
     }
 
     /**
+     * Return a <select> element with options
+     *
+     * @param string $name            the name="" attribute
+     * @param array $options          array containing the value and string options for <option value="key">value</option> 
+     * @param string $default         the default value if no old available
+     * @param array|null $attributes  other input html attributes
+     * @param mixed $validate         Laravel validation rules
+     * @return string
+     */
+    public function select(string $name, array $options, string $default = null, ?array $attributes = [], $validate = null): string
+    {
+        $this->add_rule($name, $validate);
+        $response = $this->html_element('select', $name, $attributes);
+        foreach ($options as $key => $value) {
+            if (is_numeric($key)) {
+                $key = $value;
+            }
+            $response .= '<option' . (($this->values[$name] ?? $default) == $key ? ' selected' : '') . ' value="' . $key . '">' . $value . '</option>';
+        }
+        $response .= '</select>';
+        return $response;
+    }
+
+    /**
      * Return a <UL> list with (validation) errors if any
      *
      * @param ViewErrorBag $errors  The $errors bag passed to the view
