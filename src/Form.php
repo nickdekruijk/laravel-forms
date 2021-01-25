@@ -32,6 +32,13 @@ class Form
     ];
 
     /**
+     * Store validation errors here
+     *
+     * @var ViewErrorBag
+     */
+    private $errors = null;
+
+    /**
      * To keep track of any input=file elements so Form::close will also include the bytesToSize javascript function
      *
      * @var boolean
@@ -180,10 +187,25 @@ class Form
      */
     private function html_element(string $element, string $name, ?array $attributes): string
     {
+        // Initiate response html
+        $response = '';
+
+        // Add name as attribute 
         $attributes['name'] = $name;
 
+        // Add error to class attribute if a validation error exists.
+        if ($this->errors && $this->errors->has($name)) {
+            $classes = explode(' ', $attributes['class'] ?? '');
+            array_push($classes, 'error');
+            $attributes['class'] = implode(' ', $classes);
+            $attributes['oninput'] = ($attributes['onkeyup'] ?? '') . ';this.previousSibling.classList.add(\'changed\')';
+            $attributes['onchange'] = ($attributes['onkeyup'] ?? '') . ';this.previousSibling.classList.add(\'changed\')';
+            $response .= '<span class="error-msg">' . rtrim($this->errors->first($name), '.') . '</span>';
+            // dd($element, $attributes, $classes, $this->errors->first($name));
+        }
+
         // Generate response
-        $response = '<' . $element;
+        $response .= '<' . $element;
         foreach ($attributes as $attribute => $value) {
             if ($value) {
                 if (is_numeric($attribute)) {
@@ -436,6 +458,7 @@ class Form
      */
     public function errors(ViewErrorBag $errors, string $message = null, string $class = 'alert alert-danger'): string
     {
+        $this->errors = $errors;
         $response = '';
         if ($errors->any()) {
             $response .= '<ul class="' . $class . '">';
