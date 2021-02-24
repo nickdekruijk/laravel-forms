@@ -193,7 +193,7 @@ class Form
         // Add name as attribute 
         $attributes['name'] = $name;
 
-        // Add error to class attribute if a validation error exists.
+        // Add error to class attribute and add error-msg element if a validation error exists
         if ($this->errors && $this->errors->has($name)) {
             $classes = explode(' ', $attributes['class'] ?? '');
             array_push($classes, 'error');
@@ -201,7 +201,6 @@ class Form
             $attributes['oninput'] = ($attributes['onkeyup'] ?? '') . ';this.previousSibling.classList.add(\'changed\')';
             $attributes['onchange'] = ($attributes['onkeyup'] ?? '') . ';this.previousSibling.classList.add(\'changed\')';
             $response .= '<span class="error-msg">' . rtrim($this->errors->first($name), '.') . '</span>';
-            // dd($element, $attributes, $classes, $this->errors->first($name));
         }
 
         // Generate response
@@ -385,7 +384,7 @@ class Form
 
         $attributes['value'] = $this->values[$name] ?? $default;
         $this->add_rule($name, $validate);
-        $response = '<span class="' . ($attributes['class'] ?? 'form_input') . '">';
+        $response = '<span class="' . ($this->errors && $this->errors->has($name) ? 'error ' : '') . ($attributes['class'] ?? 'form_input') . '">';
         $response .= '<button type="button" ' . (isset($this->uploads[$name]['name']) ? 'style="display:none" ' : '') . 'onclick="return form_file_browse_click(this)">' . trans('form::button.browse') . '</button>';
         $response .= '<button type="button" ' . (empty($this->uploads[$name]['name']) ? 'style="display:none" ' : '') . 'onclick="return form_file_delete_click(this)">' . trans('form::button.delete') . '</button>';
         if (isset($this->uploads[$name]['name'])) {
