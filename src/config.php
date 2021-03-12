@@ -40,7 +40,7 @@ return [
     |--------------------------------------------------------------------------
     | upload_path
     |--------------------------------------------------------------------------
-    | Path to use withing the upload storage
+    | Path to use within the upload storage
     */
     'upload_path' => 'form_uploads',
 
