@@ -343,26 +343,27 @@ class Form
                 }
                 if (typeof form_file_browse_click != 'function') {
                     window.form_file_browse_click = function(t) {
-                        t.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.click();
+                        t.parentElement.querySelector('INPUT[type=file]').click();
                     };
                 }
                 if (typeof form_file_delete_click != 'function') {
                     window.form_file_delete_click = function(t) {
-                        t.previousElementSibling.style.display = 'block';
-                        t.style.display = 'none';
-                        t.nextElementSibling.style.display = 'none';
-                        t.nextElementSibling.innerHTML = '';
-                        t.nextElementSibling.nextElementSibling.checked = true;
-                        t.nextElementSibling.nextElementSibling.nextElementSibling.value = '';
+                        t.parentElement.querySelector('.button-browse').style.display = 'block';
+                        t.parentElement.querySelector('.button-delete').style.display = 'none';
+                        t.parentElement.querySelector('.fileinfo').style.display = 'none';
+                        t.parentElement.querySelector('.fileinfo').innerHTML = '';
+                        t.parentElement.querySelector('INPUT[type=checkbox]').checked = false;
+                        t.parentElement.querySelector('INPUT[type=file]').value = '';
                     };
                 }
                 if (typeof form_file_input_change != 'function') {
                     window.form_file_input_change = function(t) {
-                        t.previousElementSibling.checked = false;
-                        t.previousElementSibling.previousElementSibling.innerHTML = t.value.replace(/^.*[\\\/]/, '') + ' (' + bytesToSize(t.files[0].size) + ')';
-                        t.previousElementSibling.previousElementSibling.style.display = 'block';
-                        t.previousElementSibling.previousElementSibling.previousElementSibling.style.display = 'block';
-                        t.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.style.display = 'none';
+                        t.parentElement.querySelector('INPUT[type=checkbox]').checked = false;
+                        console.log('form_file_input_change');
+                        t.parentElement.querySelector('.fileinfo').innerHTML = t.value.replace(/^.*[\\\/]/, '') + ' (' + bytesToSize(t.files[0].size) + ')';
+                        t.parentElement.querySelector('.fileinfo').style.display = 'block';
+                        t.parentElement.querySelector('.button-delete').style.display = 'block';
+                        t.parentElement.querySelector('.button-browse').style.display = 'none';
                     };
                 }
             </script>
@@ -385,12 +386,12 @@ class Form
         $attributes['value'] = $this->values[$name] ?? $default;
         $this->add_rule($name, $validate);
         $response = '<span class="' . ($this->errors && $this->errors->has($name) ? 'error ' : '') . ($attributes['class'] ?? 'form_input') . '">';
-        $response .= '<button type="button" ' . (isset($this->uploads[$name]['name']) ? 'style="display:none" ' : '') . 'onclick="return form_file_browse_click(this)">' . trans('form::button.browse') . '</button>';
-        $response .= '<button type="button" ' . (empty($this->uploads[$name]['name']) ? 'style="display:none" ' : '') . 'onclick="return form_file_delete_click(this)">' . trans('form::button.delete') . '</button>';
+        $response .= '<button class="button-browse" type="button" ' . (isset($this->uploads[$name]['name']) ? 'style="display:none" ' : '') . 'onclick="return form_file_browse_click(this)">' . trans('form::button.browse') . '</button>';
+        $response .= '<button class="button-delete" type="button" ' . (empty($this->uploads[$name]['name']) ? 'style="display:none" ' : '') . 'onclick="return form_file_delete_click(this)">' . trans('form::button.delete') . '</button>';
         if (isset($this->uploads[$name]['name'])) {
-            $response .= '<span>' . $this->uploads[$name]['name'] . ' (' . $this->bytesToSize($this->uploads[$name]['size']) . ')' . '</span>';
+            $response .= '<span class="fileinfo">' . $this->uploads[$name]['name'] . ' (' . $this->bytesToSize($this->uploads[$name]['size']) . ')' . '</span>';
         } else {
-            $response .= '<span style="display:none"></span>';
+            $response .= '<span class="fileinfo" style="display:none"></span>';
         }
         $response .= '<input style="display:none" type="checkbox" name="_delete_' . $name . '">';
         $response .= $this->html_element('input', $name, array_merge(['type' => 'file', 'style="display:none"', 'onchange' => 'return form_file_input_change(this)'], $attributes));
