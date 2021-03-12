@@ -198,8 +198,8 @@ class Form
             $classes = explode(' ', $attributes['class'] ?? '');
             array_push($classes, 'error');
             $attributes['class'] = implode(' ', $classes);
-            $attributes['oninput'] = ($attributes['onkeyup'] ?? '') . ';this.previousSibling.classList.add(\'changed\')';
-            $attributes['onchange'] = ($attributes['onkeyup'] ?? '') . ';this.previousSibling.classList.add(\'changed\')';
+            $attributes['oninput'] = ($attributes['onkeyup'] ?? '') . ';' . ($attributes['oninput'] ?? '') . ';this.previousSibling.classList.add(\'changed\')';
+            $attributes['onchange'] = ($attributes['onkeyup'] ?? '') . ';' . ($attributes['onchange'] ?? '') . ';this.previousSibling.classList.add(\'changed\')';
             $response .= '<span class="error-msg">' . rtrim($this->errors->first($name), '.') . '</span>';
         }
 
