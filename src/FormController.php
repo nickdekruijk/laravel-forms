@@ -28,6 +28,20 @@ class FormController extends Controller
     }
 
     /**
+     * Convert a value to an array if needed
+     *
+     * @param mixed $value
+     * @return array
+     */
+    private static function toArray($value): array
+    {
+        if (!is_array($value)) {
+            $value = explode('|', $value);
+        }
+        return $value;
+    }
+
+    /**
      * The mail handler
      *
      * @param array $form
@@ -45,11 +59,7 @@ class FormController extends Controller
         $body .= '</table>';
         Mail::send([], [], function ($message) use ($form, $body) {
             $message->subject($form['controller']['mail_subject']);
-            $to = $form['controller']['mail_to'];
-            if (!is_array($to)) {
-                $to = explode('|', $to);
-            }
-            foreach ($to as $email) {
+            foreach (self::toArray($form['controller']['mail_to']) as $email) {
                 $message->to($email);
             }
             foreach ($form['uploads'] as $upload => $value) {
