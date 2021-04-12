@@ -71,6 +71,20 @@ class FormController extends Controller
     }
 
     /**
+     * The model handler
+     *
+     * @param array $form
+     * @return void
+     */
+    private function model(array $form)
+    {
+        $model = new $form['controller']['model'];
+        $model_column = $form['controller']['model_column'];
+        $model->$model_column = $form['values'];
+        $model->save();
+    }
+
+    /**
      * FormController@post route handler
      *
      * @param Request $request

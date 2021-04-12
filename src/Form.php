@@ -29,6 +29,7 @@ class Form
         'mail_subject' => 'New form submission',
         'mailable' => null, // 'App/Mail/Mailable'
         'model' => null, // 'App\Models\Registrations'
+        'model_column' => 'data', // Json column to store data
     ];
 
     /**
