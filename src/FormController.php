@@ -62,7 +62,10 @@ class FormController extends Controller
             foreach (self::toArray($form['controller']['mail_to']) as $email) {
                 $message->to($email);
             }
-            foreach ($form['uploads'] as $upload => $value) {
+            foreach (self::toArray($form['controller']['mail_bcc']) as $email) {
+                $message->bcc($email);
+            }
+            foreach ($form['uploads'] ?? [] as $upload => $value) {
                 $message->attachData(Storage::disk(config('forms.upload_storage'))->get($value['path']), $value['name']);
             }
             $message->setBody($body, 'text/html');

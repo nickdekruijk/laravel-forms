@@ -25,7 +25,8 @@ class Form
     private $controller = [
         'handler' => null, // 'log|mail|mailable|model'
         'log_channel' => 'stack',
-        'mail_to' => [], // '$email'
+        'mail_to' => [], // Valid e-mailaddress(es) to send mail to
+        'mail_bcc' => [], // Valid e-mailaddress(es) to send mail to as bcc
         'mail_subject' => 'New form submission',
         'mailable' => null, // 'App/Mail/Mailable'
         'model' => null, // 'App\Models\Registrations'
